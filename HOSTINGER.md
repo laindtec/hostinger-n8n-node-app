@@ -21,7 +21,8 @@ En **Anadir sitio web -> App web Node.js**:
 Configura estas variables en Hostinger. No subas `.env`.
 
 ```env
-N8N_HOST=0.0.0.0
+N8N_LISTEN_ADDRESS=0.0.0.0
+N8N_HOST=TU-DOMINIO
 N8N_PROTOCOL=https
 N8N_EDITOR_BASE_URL=https://TU-DOMINIO
 WEBHOOK_URL=https://TU-DOMINIO/
@@ -33,6 +34,16 @@ N8N_DIAGNOSTICS_ENABLED=false
 ```
 
 No fuerces `N8N_PORT` si Hostinger inyecta `PORT`. El wrapper `start.js` ya usa `PORT` cuando existe.
+
+Para `n8n.laind.io`, usa:
+
+```env
+N8N_LISTEN_ADDRESS=0.0.0.0
+N8N_HOST=n8n.laind.io
+N8N_PROTOCOL=https
+N8N_EDITOR_BASE_URL=https://n8n.laind.io
+WEBHOOK_URL=https://n8n.laind.io/
+```
 
 ## Primer arranque
 
