@@ -9,11 +9,16 @@ const n8nBin = path.join(
 );
 
 const port = process.env.PORT || process.env.N8N_PORT || "5678";
+const listenAddress = process.env.N8N_LISTEN_ADDRESS || process.env.N8N_HOST || "0.0.0.0";
+
+console.log(`Starting n8n on ${listenAddress}:${port}`);
 
 const child = spawn(n8nBin, ["start"], {
   stdio: "inherit",
   env: {
     ...process.env,
+    N8N_HOST: listenAddress,
+    N8N_LISTEN_ADDRESS: listenAddress,
     N8N_PORT: port,
     PORT: port
   }
