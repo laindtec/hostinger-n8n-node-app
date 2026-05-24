@@ -10,7 +10,7 @@ En **Anadir sitio web -> App web Node.js**:
 
 - Fuente: este repositorio de GitHub o ZIP.
 - Framework: `Other` si no detecta uno automaticamente.
-- Node.js: `20.x`, `22.x` o `24.x`. n8n requiere Node `20.19` a `24.x`.
+- Node.js: `22.x` o `24.x`. Esta version de n8n requiere Node `>=22.16`.
 - Install command: `npm install`.
 - Build command: dejar vacio.
 - Start command: `npm start`.
@@ -40,6 +40,7 @@ Cuando Hostinger termine el deploy, abre la URL publica. n8n deberia mostrar el 
 
 ## Senales de que Hostinger Node.js no alcanza
 
+- El deploy muestra `EBADENGINE` con Node `20.x`; cambia la version de Node a `22.x` o `24.x`.
 - El panel muestra reinicios constantes.
 - n8n carga pero aparece "connection lost".
 - Los webhooks externos no responden.

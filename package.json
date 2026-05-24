@@ -9,7 +9,7 @@
     "n8n": "n8n start"
   },
   "engines": {
-    "node": ">=20.19 <=24.x"
+    "node": ">=22.16 <=24.x"
   },
   "dependencies": {
     "n8n": "2.20.6"
