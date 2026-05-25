@@ -15,21 +15,13 @@ const listenAddress = process.env.N8N_LISTEN_ADDRESS || "0.0.0.0";
 console.log(`Starting n8n on ${listenAddress}:${port}`);
 
 const child = spawn(process.execPath, [n8nCli, "start"], {
-  stdio: ["ignore", "pipe", "pipe"],
+  stdio: "inherit",
   env: {
     ...process.env,
     N8N_LISTEN_ADDRESS: listenAddress,
     N8N_PORT: port,
     PORT: port
   }
-});
-
-child.stdout.on("data", (chunk) => {
-  process.stdout.write(`[n8n stdout] ${chunk}`);
-});
-
-child.stderr.on("data", (chunk) => {
-  process.stderr.write(`[n8n stderr] ${chunk}`);
 });
 
 child.on("error", (error) => {

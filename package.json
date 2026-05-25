@@ -6,7 +6,7 @@
   "main": "start.js",
   "scripts": {
     "start": "node start.js",
-    "n8n": "n8n start"
+    "n8n": "node node_modules/n8n/bin/n8n start"
   },
   "engines": {
     "node": ">=22.16 <=24.x"
