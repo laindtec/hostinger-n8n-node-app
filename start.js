@@ -30,6 +30,8 @@ child.on("error", (error) => {
 });
 
 child.on("exit", (code, signal) => {
+  console.log(`n8n process exited with code=${code ?? "null"} signal=${signal ?? "null"}`);
+
   if (signal) {
     process.kill(process.pid, signal);
     return;
@@ -40,6 +42,11 @@ child.on("exit", (code, signal) => {
 
 for (const signal of ["SIGINT", "SIGTERM"]) {
   process.on(signal, () => {
+    console.log(`Received ${signal}, stopping n8n`);
     child.kill(signal);
   });
 }
+
+setTimeout(() => {
+  console.log("n8n startup watchdog: process is still running after 10 seconds");
+}, 10000);
