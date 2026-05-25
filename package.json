@@ -6,7 +6,9 @@
   "main": "start.js",
   "scripts": {
     "start": "node start.js",
-    "n8n": "node node_modules/n8n/bin/n8n start"
+    "n8n": "node node_modules/n8n/bin/n8n start",
+    "n8n:list": "node scripts/n8n-list-workflows.mjs",
+    "n8n:export": "node scripts/n8n-export-workflows.mjs"
   },
   "engines": {
     "node": ">=22.16 <=24.x"
