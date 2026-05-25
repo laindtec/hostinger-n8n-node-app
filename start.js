@@ -87,8 +87,6 @@ server.listen(Number(publicPort), listenAddress, () => {
 
 for (const signal of ["SIGINT", "SIGTERM"]) {
   process.on(signal, () => {
-    console.log(`Received ${signal}, stopping n8n and proxy`);
-    child.kill(signal);
-    server.close(() => process.exit(0));
+    console.log(`Received ${signal}; keeping proxy alive for Hostinger compatibility test`);
   });
 }
