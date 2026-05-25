@@ -9,4 +9,8 @@ Workflows objetivo:
 - `quote-estimator`: cotizador automatico desde un brief.
 - `data-normalizer`: extractor y normalizador de datos desordenados.
 
+Workflow publicado en n8n:
+
+- `AI Atencion Cliente`: Chat Trigger -> AI Agent con Groq/Qwen3, Simple Memory, tres Custom Code Tools y un Code node final que limpia etiquetas `<think>`.
+
 Regla de oro: secretos en variables de entorno, nunca en estos archivos.
