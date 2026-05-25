@@ -27,6 +27,7 @@ N8N_PROTOCOL=https
 N8N_EDITOR_BASE_URL=https://TU-DOMINIO
 WEBHOOK_URL=https://TU-DOMINIO/
 N8N_ENCRYPTION_KEY=CAMBIAR_POR_UNA_CLAVE_LARGA_DE_32_CARACTERES_O_MAS
+N8N_USER_FOLDER=/home/u319593965/domains/n8n.laind.io/.n8n
 GENERIC_TIMEZONE=America/Argentina/Buenos_Aires
 TZ=America/Argentina/Buenos_Aires
 N8N_SECURE_COOKIE=true
@@ -43,6 +44,7 @@ N8N_HOST=n8n.laind.io
 N8N_PROTOCOL=https
 N8N_EDITOR_BASE_URL=https://n8n.laind.io
 WEBHOOK_URL=https://n8n.laind.io/
+N8N_USER_FOLDER=/home/u319593965/domains/n8n.laind.io/.n8n
 ```
 
 ## Primer arranque

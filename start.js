@@ -12,6 +12,7 @@ const n8nUrl = `http://127.0.0.1:${n8nPort}`;
 console.log(`Starting Hostinger proxy on ${listenAddress}:${publicPort}`);
 console.log(`Starting n8n internally on 127.0.0.1:${n8nPort}`);
 console.log(`Hostinger PORT=${process.env.PORT || "not set"}, N8N_PORT=${process.env.N8N_PORT || "not set"}`);
+console.log(`n8n CLI path=${n8nCli}`);
 
 const child = spawn(process.execPath, [n8nCli, "start"], {
   stdio: ["ignore", "pipe", "pipe"],
@@ -19,7 +20,8 @@ const child = spawn(process.execPath, [n8nCli, "start"], {
     ...process.env,
     N8N_LISTEN_ADDRESS: "127.0.0.1",
     N8N_PORT: n8nPort,
-    PORT: n8nPort
+    PORT: n8nPort,
+    NODE_OPTIONS: `${process.env.NODE_OPTIONS || ""} --trace-uncaught --unhandled-rejections=strict`.trim()
   }
 });
 
