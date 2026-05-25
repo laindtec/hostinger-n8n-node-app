@@ -9,10 +9,11 @@ const n8nCli = path.join(
   "n8n"
 );
 
-const port = process.env.PORT || process.env.N8N_PORT || "5678";
+const port = process.env.PORT || process.env.N8N_PORT || "3000";
 const listenAddress = process.env.N8N_LISTEN_ADDRESS || "0.0.0.0";
 
 console.log(`Starting n8n on ${listenAddress}:${port}`);
+console.log(`Hostinger PORT=${process.env.PORT || "not set"}, N8N_PORT=${process.env.N8N_PORT || "not set"}`);
 
 const child = spawn(process.execPath, [n8nCli, "start"], {
   stdio: "inherit",
