@@ -11,6 +11,6 @@ Workflows objetivo:
 
 Workflow publicado en n8n:
 
-- `AI Atencion Cliente`: Chat Trigger -> AI Agent con Groq/Qwen3, Simple Memory, tres Custom Code Tools y un Code node final que limpia etiquetas `<think>`.
+- `AI Atencion Cliente`: Chat Trigger -> AI Agent con Groq/Qwen3, Simple Memory y tres Custom Code Tools. La limpieza de etiquetas `<think>` vive como script reusable, pero no se conecta como ultimo nodo del chat porque puede bloquear el runner interactivo de n8n.
 
 Regla de oro: secretos en variables de entorno, nunca en estos archivos.

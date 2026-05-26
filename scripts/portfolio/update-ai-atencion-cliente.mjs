@@ -1,10 +1,8 @@
+import { readFile } from "node:fs/promises";
 import { getWorkflow, updateWorkflow, listWorkflows } from "../lib/n8n-api.mjs";
 import {
-  CASE_SUMMARY_TOOL_CODE,
-  CLEAN_RESPONSE_CODE,
-  HANDOFF_TOOL_CODE,
   MODEL,
-  SERVICE_CATALOG_TOOL_CODE,
+  PREPARE_CUSTOMER_CONTEXT_CODE,
   SYSTEM_MESSAGE,
   WORKFLOW_NAME
 } from "./ai-atencion-cliente-definition.mjs";
@@ -21,7 +19,14 @@ async function findWorkflowByName(name) {
 }
 
 const workflowId = process.env.N8N_WORKFLOW_ID || await findWorkflowByName(WORKFLOW_NAME);
-const workflow = await getWorkflow(workflowId);
+let workflow;
+
+if (process.env.N8N_REPAIR_FROM_EXPORT) {
+  const exportPath = process.env.N8N_REPAIR_FROM_EXPORT;
+  workflow = JSON.parse(await readFile(exportPath, "utf8"));
+} else {
+  workflow = await getWorkflow(workflowId);
+}
 
 const existing = new Map(workflow.nodes.map((node) => [node.name, node]));
 const chatTrigger = existing.get("When chat message received");
@@ -59,34 +64,37 @@ const nextNodes = [
     ...chatTrigger,
     position: [0, 0]
   },
-  {
-    ...aiAgent,
+  upsertNode("Build Customer Context", {
+    id: "9f5f86e8-b46e-4e13-af59-6ab951e6079a",
+    name: "Build Customer Context",
+    type: "n8n-nodes-base.code",
+    typeVersion: 2,
     position: [260, 0],
     parameters: {
+      mode: "runOnceForAllItems",
+      language: "javaScript",
+      jsCode: PREPARE_CUSTOMER_CONTEXT_CODE
+    }
+  }),
+  {
+    ...aiAgent,
+    position: [560, 0],
+    parameters: {
       ...aiAgent.parameters,
+      promptType: "define",
+      text: "={{ $json.agentInput }}",
       options: {
         ...(aiAgent.parameters?.options || {}),
         systemMessage: SYSTEM_MESSAGE
       }
     }
   },
-  upsertNode("Clean AI Response", {
-    id: "30f82089-e8ea-46d1-9b01-fd41ffb8bb31",
-    name: "Clean AI Response",
-    type: "n8n-nodes-base.code",
-    typeVersion: 2,
-    position: [560, 0],
-    parameters: {
-      mode: "runOnceForAllItems",
-      jsCode: CLEAN_RESPONSE_CODE
-    }
-  }),
   upsertNode("Simple Conversation Memory", {
     id: "d3118b80-86c5-4a04-9937-c7d42e6eb50f",
     name: "Simple Conversation Memory",
     type: "@n8n/n8n-nodes-langchain.memoryBufferWindow",
     typeVersion: 1.1,
-    position: [80, 450],
+    position: [400, 420],
     parameters: {
       sessionKey: "={{ $json.sessionId || 'laind-demo-session' }}",
       contextWindowLength: 8
@@ -94,7 +102,7 @@ const nextNodes = [
   }),
   {
     ...groqModel,
-    position: [80, 230],
+    position: [390, 230],
     parameters: {
       ...groqModel.parameters,
       model: MODEL,
@@ -103,49 +111,7 @@ const nextNodes = [
         temperature: 0.2
       }
     }
-  },
-  upsertNode("consultar_servicios_laind", {
-    id: "98f8f940-92dc-45a2-bdf4-1630a4a5e9d5",
-    name: "consultar_servicios_laind",
-    type: "@n8n/n8n-nodes-langchain.toolCode",
-    typeVersion: 1.3,
-    position: [260, 260],
-    parameters: {
-      name: "consultar_servicios_laind",
-      description: "Consulta el catalogo de servicios de Laind y recomienda el workflow mas adecuado segun el mensaje del usuario. Input: consulta o contexto del usuario.",
-      language: "javaScript",
-      jsCode: SERVICE_CATALOG_TOOL_CODE,
-      specifyInputSchema: false
-    }
-  }),
-  upsertNode("evaluar_handoff", {
-    id: "44733d2a-75d7-4c94-8e73-2217f5dd2e36",
-    name: "evaluar_handoff",
-    type: "@n8n/n8n-nodes-langchain.toolCode",
-    typeVersion: 1.3,
-    position: [470, 260],
-    parameters: {
-      name: "evaluar_handoff",
-      description: "Evalua si la conversacion requiere derivacion humana, por precio final, urgencia, datos sensibles, incidente productivo o reclamo. Input: mensaje o contexto.",
-      language: "javaScript",
-      jsCode: HANDOFF_TOOL_CODE,
-      specifyInputSchema: false
-    }
-  }),
-  upsertNode("resumir_caso_cliente", {
-    id: "87cbf923-1fe8-4433-af59-549556375f36",
-    name: "resumir_caso_cliente",
-    type: "@n8n/n8n-nodes-langchain.toolCode",
-    typeVersion: 1.3,
-    position: [680, 260],
-    parameters: {
-      name: "resumir_caso_cliente",
-      description: "Resume la consulta del cliente, extrae email/telefono si existen, detecta servicio probable y lista datos faltantes para seguimiento. Input: conversacion o mensaje del usuario.",
-      language: "javaScript",
-      jsCode: CASE_SUMMARY_TOOL_CODE,
-      specifyInputSchema: false
-    }
-  })
+  }
 ];
 
 const nextWorkflow = {
@@ -153,25 +119,16 @@ const nextWorkflow = {
   nodes: nextNodes,
   connections: {
     "When chat message received": {
-      main: [[{ node: "AI Agent", type: "main", index: 0 }]]
+      main: [[{ node: "Build Customer Context", type: "main", index: 0 }]]
     },
-    "AI Agent": {
-      main: [[{ node: "Clean AI Response", type: "main", index: 0 }]]
+    "Build Customer Context": {
+      main: [[{ node: "AI Agent", type: "main", index: 0 }]]
     },
     "Groq Chat Model": {
       ai_languageModel: [[{ node: "AI Agent", type: "ai_languageModel", index: 0 }]]
     },
     "Simple Conversation Memory": {
       ai_memory: [[{ node: "AI Agent", type: "ai_memory", index: 0 }]]
-    },
-    "consultar_servicios_laind": {
-      ai_tool: [[{ node: "AI Agent", type: "ai_tool", index: 0 }]]
-    },
-    "evaluar_handoff": {
-      ai_tool: [[{ node: "AI Agent", type: "ai_tool", index: 0 }]]
-    },
-    "resumir_caso_cliente": {
-      ai_tool: [[{ node: "AI Agent", type: "ai_tool", index: 0 }]]
     }
   },
   settings: {}
